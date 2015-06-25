@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import dict.Dict;
+
 
 public class MainActivity extends ActionBarActivity {
     EditText searchEditText;
@@ -24,6 +26,8 @@ public class MainActivity extends ActionBarActivity {
     ListView dictionaryListView;
     ImageButton voiceImageButton;
     private final int REQ_CODE_SPEECH_INPUT = 100;
+
+    Dict dict = new Dict();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

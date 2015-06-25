@@ -21,5 +21,6 @@
             android:label="@string/title_activity_word_definition_detail" >
         </activity>
     </application>
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 </manifest>
