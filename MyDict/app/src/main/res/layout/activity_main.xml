@@ -24,7 +24,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:id="@+id/voiceImageButton"
-                android:src="@drawable/speaker"
+                android:src="@drawable/voice"
                 android:layout_marginLeft="10dp" />
 
             <Button

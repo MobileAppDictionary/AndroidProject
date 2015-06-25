@@ -35,6 +35,13 @@
                 android:src="@drawable/speaker"
                 android:layout_marginLeft="10dp" />
 
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/imageButton"
+                android:src="@drawable/favorite_star"
+                android:layout_marginLeft="10dp" />
+
         </LinearLayout>
 
         <TextView

@@ -1,6 +1,8 @@
 package com.example.phungminhhoang.mydict;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.speech.RecognizerIntent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,12 +15,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends ActionBarActivity {
     EditText searchEditText;
     Button searchButton;
     ListView dictionaryListView;
     ImageButton voiceImageButton;
+    private final int REQ_CODE_SPEECH_INPUT = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,31 @@ public class MainActivity extends ActionBarActivity {
 
             }
         });
+
+        voiceImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                promptSpeechInput();
+            }
+        });
+    }
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                getString(R.string.speech_prompt));
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.speech_not_supported),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        //Toast.makeText(this, "hello", Toast.LENGTH_LONG).show();//////////////
     }
 
 
@@ -94,11 +124,37 @@ public class MainActivity extends ActionBarActivity {
         }
         else if(id == 2)
             return true;
-        else if(id == 3)
+        else if(id == 3) {
+            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory( Intent.CATEGORY_HOME );
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
             return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
 
-    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    //   txtSpeechInput.setText(result.get(0));
+                    Intent intent =new Intent(MainActivity.this, word_definition_detail.class);
+                    intent.putExtra("word", result.get(0));
+                    startActivity(intent);
+                }
+                //if(data  == null)
+                //   Toast.makeText(getApplicationContext(),"No data", Toast.LENGTH_LONG).show();
+                break;
+            }
+
+        }
+    }
 }
