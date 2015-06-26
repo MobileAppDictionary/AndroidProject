@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">MyDict</string>
+    <string name="app_name">H2Dict</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_word_definition_detail">word_definition_detail</string>
+    <string name="title_activity_word_definition_detail">H2Dict</string>
 
     <string name="speech_prompt">Say something&#8230;</string>
     <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>

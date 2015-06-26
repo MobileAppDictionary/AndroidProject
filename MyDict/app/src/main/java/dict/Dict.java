@@ -69,6 +69,7 @@ public class Dict {
         return decValue;
     }
 
+    //trả từ gần giống
     public List<String> GetSuggestion(String key){
         key = key.toLowerCase();
         List<String> lstString = new ArrayList<String>();

@@ -33,8 +33,9 @@ public class DataHelper {
     private ListWords loadData(){
         _lstWords = new ListWords();
 
-        File file = new File(path + pathFileInd);
+
         try {
+            File file = new File(path + pathFileInd);
             FileInputStream iStream = new FileInputStream(file);
             InputStreamReader reader = new InputStreamReader(iStream);
             BufferedReader bufReader = new BufferedReader(reader);

@@ -2,15 +2,21 @@ package com.example.phungminhhoang.mydict;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Color;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,13 +26,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import dict.Dict;
 
 
 public class MainActivity extends ActionBarActivity implements TextToSpeech.OnInitListener {
-    EditText searchEditText;
+    AutoCompleteTextView txtSearch;//text box từ cần tra
+    String[] listSuggestion;//danh sách những từ gần giống
+    //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.select_dialog_item,listSuggestion);
     Button searchButton;
     ImageButton voiceImageButton;
 
@@ -41,27 +50,61 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
 
     private final int REQ_CODE_SPEECH_INPUT = 100;
 
-    Dict dict = new Dict();
+    Dict dict;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dict = new Dict();
 
 
-        searchEditText = (EditText)findViewById(R.id.searchEditText);
+
         voiceImageButton = (ImageButton)findViewById(R.id.voiceImageButton);
         searchButton = (Button)findViewById(R.id.searchButton);
 
         tts = new TextToSpeech(this, this);
 
         wordTextView = (TextView)findViewById(R.id.textView1);
+        txtSearch = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView1);
         definitionTextView = (TextView)findViewById(R.id.definitionTextView);
-        //definitionScrollView = (ScrollView)findViewById(R.id.definitionScrollView);
+        //tạo thanh trượt trên text view
+        definitionTextView.setMovementMethod(new ScrollingMovementMethod());
+
         speechImageButton = (ImageButton)findViewById(R.id.speechImageButton);
         favoriteImageButton = (ImageButton)findViewById(R.id.favoriteImageButton);
 
         //event click
+        //sự kiện txtSearch thay đổi
+        txtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //cho danh sách từ gần giống vào list
+                List<String> list = dict.GetSuggestion(txtSearch.getText().toString());
+                //lỗi tại đây
+                listSuggestion = (String[]) list.toArray();
+
+
+                //Creating the instance of ArrayAdapter containing list of language names
+                //xem lai chỗ mainActivity.this <=> this
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.select_dialog_item,listSuggestion);
+
+                txtSearch.setThreshold(1);//will start working from first character
+                txtSearch.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+                txtSearch.setTextColor(Color.BLACK);//set color
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         speechImageButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -74,8 +117,8 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         favoriteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 //lưu từ yêu thích
+                dict.AddFavoriteWords(wordTextView.getText().toString());//wordTextView: từ tra
 
             }
         });
@@ -84,7 +127,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
 
             @Override
             public void onClick(View v) {
-                String wordSeach = searchEditText.getText().toString();
+                String wordSeach = txtSearch.getText().toString();
                 wordTextView.setText(wordSeach);
                 String wordDef = dict.Search(wordSeach);
                 definitionTextView.setText(getIntent().getStringExtra(wordDef));
@@ -133,6 +176,8 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 
+    //muti select listview
+    //textbox sugesstion
     @Override
     public void onInit(int status) {
         // TODO Auto-generated method stub
@@ -177,25 +222,12 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         return true;
     }
 
+    //tạo menu
     private void populateMyFirstMenu(Menu menu) {
         int groupId = 0;
 
-        int smGroupId = 0; // don't care, same as Menu.NONE
-        int smItemId = 5;  // fifth element
-        int smOrder = 5;  // don't care, same as Menu.NONE
-
-        SubMenu mySubMenu1 =  menu.addSubMenu(smGroupId, smItemId, smOrder, "Lịch sử");
-        for(int i = 0; i < 20; i++)
-        {
-            mySubMenu1.add(smGroupId, 1, i, "WordSearchHistory");
-        }
-
-        SubMenu mySubMenu2 =  menu.addSubMenu(smGroupId, smItemId, smOrder, "Từ yêu thích");
-        for(int i = 0; i < 20; i++)
-        {
-            mySubMenu2.add(smGroupId, 2, i, "WordSearchFavorite");
-        }
-
+        MenuItem item1 = menu.add(groupId, 1, 1, "Lịch sử");
+        MenuItem item2 = menu.add(groupId, 2, 2, "Từ yêu thích");
         MenuItem item3 = menu.add(groupId, 3, 3, "Thoát");
 
         //set icons
@@ -211,27 +243,29 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        //menu lịch sử, chuyển sang activity word_definition_detail
         if(id == 1) {
-            String temp = item.getTitle().toString();
-            wordTextView.setText(temp);
-
-            //load dữ liệu history
-
+            String string= wordTextView.getText().toString();
+            Intent intent=new Intent(MainActivity.this, word_definition_detail.class);
+            intent.putExtra("type", "Lịch sử");
+            startActivity(intent);
             return true;
         }
+        //menu từ yêu thích, , chuyển sang activity word_definition_detail
         else if(id == 2) {
-            String temp = item.getTitle().toString();
-            wordTextView.setText(temp);
-
-            //load dữ liệu favorite
-
+            String string= wordTextView.getText().toString();
+            Intent intent=new Intent(MainActivity.this, word_definition_detail.class);
+            intent.putExtra("type", "Từ yêu thích");
+            startActivity(intent);
             return true;
         }
+        //menu thoát
         else if(id == 3) {
-            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-            homeIntent.addCategory( Intent.CATEGORY_HOME );
-            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(homeIntent);
+            //Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            //homeIntent.addCategory( Intent.CATEGORY_HOME );
+            //homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            //startActivity(homeIntent);
+            finish();
             return true;
         }
 
