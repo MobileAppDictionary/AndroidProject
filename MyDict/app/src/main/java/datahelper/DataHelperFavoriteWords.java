@@ -34,6 +34,22 @@ public class DataHelperFavoriteWords {
         _lstFavoriteWords = new ArrayList<String>();
 
         File file = new File(path + pathFile);
+
+        if(!file.exists()){
+
+            FileOutputStream os = null;
+            try {
+                os = new FileOutputStream(file);
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
         try {
             FileInputStream iStream = new FileInputStream(file);
             InputStreamReader reader = new InputStreamReader(iStream);

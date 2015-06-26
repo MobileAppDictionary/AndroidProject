@@ -103,7 +103,7 @@ public class Dict {
         if(LstFavoriteWords == null)
             LstFavoriteWords = new ArrayList<>();
 
-        _lstWords = DataHelper.LoadData(_lstTypeDict.get(0));
+        LstFavoriteWords = DataHelperFavoriteWords.LoadFavoriteWords ();
     }
     public void AddFavoriteWords(String word){
         addFavoriteWords(word);
@@ -134,12 +134,16 @@ public class Dict {
         DataHelperFavoriteWords.SaveFavoriteWords (LstFavoriteWords);
     }
 
+    public void UpdateFavoriteWords(List<String> lstFavoriteWords){
+        DataHelperFavoriteWords.SaveFavoriteWords (lstFavoriteWords);
+    }
+
 
     public void LoadTranslatedWords(){
         if(LstTranslatedWords == null)
             LstTranslatedWords = new ArrayList<>();
 
-        _lstWords = DataHelper.LoadData(_lstTypeDict.get(0));
+        LstTranslatedWords = DataHelperTranslatedWords.LoadTranslatedWords();
     }
     public void AddTranslatedWords(String word){
         addTranslatedWords(word);
@@ -168,5 +172,9 @@ public class Dict {
         }
 
         DataHelperTranslatedWords.SaveTranslatedWords (LstTranslatedWords);
+    }
+
+    public void UpdateTranslatedWords(List<String> lstTranslatedWords){
+        DataHelperTranslatedWords.SaveTranslatedWords (lstTranslatedWords);
     }
 }

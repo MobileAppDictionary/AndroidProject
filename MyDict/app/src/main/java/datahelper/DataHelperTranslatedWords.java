@@ -21,7 +21,8 @@ public class DataHelperTranslatedWords {
     private List<String> _lstTranslatedWords;
 
     String path = Environment.getExternalStorageState();
-    String pathFile = "/Data/EnVi.en-US/translated.txt";
+    String pathFile = "/Data/EnVi.en-US/";
+    String fileName = "translated.txt";
 
     public static List<String> LoadTranslatedWords(){
         return _dateHelper.loadTranslatedWords();
@@ -30,7 +31,21 @@ public class DataHelperTranslatedWords {
     private List<String> loadTranslatedWords(){
         _lstTranslatedWords = new ArrayList<String>();
 
-        File file = new File(path + pathFile);
+        File file = new File(path + pathFile + fileName);
+        if(!file.exists()){
+
+            FileOutputStream os = null;
+            try {
+                os = new FileOutputStream(file);
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
         try {
             FileInputStream iStream = new FileInputStream(file);
             InputStreamReader reader = new InputStreamReader(iStream);
