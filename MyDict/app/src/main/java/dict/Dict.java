@@ -1,5 +1,10 @@
 package dict;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import com.example.phungminhhoang.mydict.MainActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +50,7 @@ public class Dict {
             int offset = GetDemicalValue(get_lstWords().LstInd.get(ind));
             int length = GetDemicalValue(get_lstWords().LstLen.get(ind));
             res = DataHelper.GetMeaning(offset, length);
+
         }
 
         return res;
@@ -62,6 +68,7 @@ public class Dict {
         }
         return decValue;
     }
+
     public List<String> GetSuggestion(String key){
         key = key.toLowerCase();
         List<String> lstString = new ArrayList<String>();

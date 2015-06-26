@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import dict.Dict;
+
 
 public class word_definition_detail extends ActionBarActivity implements
         TextToSpeech.OnInitListener{
@@ -21,6 +23,7 @@ public class word_definition_detail extends ActionBarActivity implements
     TextView definitionTextView;
     ImageButton speechImageButton;
     private TextToSpeech tts;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

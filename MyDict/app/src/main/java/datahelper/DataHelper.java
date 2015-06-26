@@ -29,6 +29,7 @@ public class DataHelper {
         return _dataHelper.loadData();
     }
 
+    //lấy toàn bộ file index
     private ListWords loadData(){
         _lstWords = new ListWords();
 
@@ -51,6 +52,7 @@ public class DataHelper {
         return _lstWords;
     }
 
+    //lấy nghĩa của từ thông qua vị trí và độ dài trong file dict
     public static String GetMeaning(int offset, int length){
         return _dataHelper.getMeaning(offset,length);
     }
