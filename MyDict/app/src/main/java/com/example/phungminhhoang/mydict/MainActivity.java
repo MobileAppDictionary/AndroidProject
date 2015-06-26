@@ -2,6 +2,7 @@ package com.example.phungminhhoang.mydict;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -25,10 +26,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import datahelper.TypeDict;
 import dict.Dict;
 
 
@@ -56,7 +60,30 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dict = new Dict();
+
+        AssetManager assetManager = getAssets();
+
+        List<TypeDict> _lstTypeDict = new ArrayList<>();
+
+        String[] nameFolders;
+        try {
+            nameFolders = assetManager.list("data");
+            for(String folder : nameFolders){
+                TypeDict typeDict = new TypeDict();
+                typeDict.nameDict = folder;
+                InputStream isWord = assetManager.open("data/" + folder + "/index.txt");
+                InputStream isMeaing = assetManager.open("data/" + folder + "/dict.txt");
+                typeDict.isMeaning = isMeaing;
+                typeDict.isWords = isWord;
+
+                _lstTypeDict.add(typeDict);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        dict = new Dict(_lstTypeDict);
+        dict.LoadData();
 
 
 
@@ -87,7 +114,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
                 //cho danh sách từ gần giống vào list
                 List<String> list = dict.GetSuggestion(txtSearch.getText().toString());
                 //lỗi tại đây
-                listSuggestion = (String[]) list.toArray();
+                listSuggestion = list.toArray((new String[0]));
 
 
                 //Creating the instance of ArrayAdapter containing list of language names
@@ -130,7 +157,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
                 String wordSeach = txtSearch.getText().toString();
                 wordTextView.setText(wordSeach);
                 String wordDef = dict.Search(wordSeach);
-                definitionTextView.setText(getIntent().getStringExtra(wordDef));
+                definitionTextView.setText(wordDef);
             }
         });
 

@@ -5,12 +5,14 @@ import android.widget.Toast;
 
 import com.example.phungminhhoang.mydict.MainActivity;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import datahelper.DataHelper;
 import datahelper.DataHelperFavoriteWords;
 import datahelper.DataHelperTranslatedWords;
+import datahelper.TypeDict;
 import model.ListWords;
 
 /**
@@ -21,24 +23,27 @@ public class Dict {
     public List<String> LstFavoriteWords;
     public List<String> LstTranslatedWords;
 
+    public List<TypeDict> _lstTypeDict;
+
     public ListWords get_lstWords() {
         return _lstWords;
     }
 
-    public Dict(){
-        LoadData();
+    public Dict(List<TypeDict> lstTypeDict){
+        _lstTypeDict = new ArrayList<>();
+        for(TypeDict typeDict : lstTypeDict)
+        _lstTypeDict.add(typeDict);
     }
 
     public void LoadData(){
         // Nếu chưa được tạo thì tạo
         if(get_lstWords() == null)
-            _lstWords = new ListWords();
+            _lstWords = DataHelper.LoadData(_lstTypeDict.get(0));
 
-        // Nếu đã load rồi thì thôi
-        if(get_lstWords().LstKey.size() != 0)
-            return ;
+//        // Nếu đã load rồi thì thôi
+//        if(get_lstWords().LstKey.size() != 0)
+//            return ;
 
-        _lstWords = DataHelper.LoadData();
     }
 
     public String Search(String key){
@@ -69,7 +74,6 @@ public class Dict {
         return decValue;
     }
 
-    //trả từ gần giống
     public List<String> GetSuggestion(String key){
         key = key.toLowerCase();
         List<String> lstString = new ArrayList<String>();
@@ -94,11 +98,12 @@ public class Dict {
     }
 
 
+
     public void LoadFavoriteWords(){
         if(LstFavoriteWords == null)
             LstFavoriteWords = new ArrayList<>();
 
-        _lstWords = DataHelper.LoadData();
+        _lstWords = DataHelper.LoadData(_lstTypeDict.get(0));
     }
     public void AddFavoriteWords(String word){
         addFavoriteWords(word);
@@ -134,7 +139,7 @@ public class Dict {
         if(LstTranslatedWords == null)
             LstTranslatedWords = new ArrayList<>();
 
-        _lstWords = DataHelper.LoadData();
+        _lstWords = DataHelper.LoadData(_lstTypeDict.get(0));
     }
     public void AddTranslatedWords(String word){
         addTranslatedWords(word);

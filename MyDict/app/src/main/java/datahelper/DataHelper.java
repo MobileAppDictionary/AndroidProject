@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import model.ListWords;
@@ -18,14 +19,16 @@ import model.ListWords;
  */
 public class DataHelper {
     private static DataHelper _dataHelper = new DataHelper();
-
-    String path = Environment.getExternalStorageState();
-    String pathFileInd = "/Data/EnVi.en-US/index.txt";
-    String getFileMean = "/Data/EnVi.en-US/dict.txt";
-
+//
+//    String path = "file:///android_asset/";
+//    String pathFileInd = "data/EnVi.en-US/index.txt";
+//    String getFileMean = "data/EnVi.en-US/dict.txt";
+    TypeDict _typeDict;
     private ListWords _lstWords;
 
-    public static ListWords LoadData(){
+    public static ListWords LoadData(TypeDict typeDict){
+        _dataHelper._typeDict = typeDict;
+
         return _dataHelper.loadData();
     }
 
@@ -35,9 +38,7 @@ public class DataHelper {
 
 
         try {
-            File file = new File(path + pathFileInd);
-            FileInputStream iStream = new FileInputStream(file);
-            InputStreamReader reader = new InputStreamReader(iStream);
+            InputStreamReader reader = new InputStreamReader(_typeDict.isWords);
             BufferedReader bufReader = new BufferedReader(reader);
 
             String line = "";
@@ -60,14 +61,14 @@ public class DataHelper {
 
     private String getMeaning(int offset, int length){
         String res = null;
-        File file = new File(path + getFileMean);
-        try {
-            RandomAccessFile reader = new RandomAccessFile(file, "r");
-            reader.seek(offset);
-            byte[] readBytes = new byte[length];
-            reader.read(readBytes, offset,length);
 
-            res = readBytes.toString();
+        try {
+
+            byte[] readBytes = new byte[length];
+            //_typeDict.isMeaning.read(readBytes, offset,length);
+            _typeDict.isMeaning.skip(offset);
+            _typeDict.isMeaning.read(readBytes, 0, length);
+            res = new String(readBytes, StandardCharsets.UTF_8);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
